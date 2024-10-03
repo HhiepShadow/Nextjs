@@ -152,4 +152,145 @@ app/
     - That component should accept a `children` prop that will be populated with a child page during rendering 
 
 ### Nested Layouts:
-- 
+- Nested layouts is a powerful feature in Nextjs allows us to organize layouts in a nested structure to create reusable interface sections for different areas of your website application
+- It is especially useful when you have multiple parts of your app that use different layouts, but still need to share certain elements like the header or the footer
+- Definition:
+    - Nested layout allows us to nest many layouts in an application  
+    Ex: We can create a overall layout for the entire application and another layout for a specific area, such as dashboard or user page  
+    - Each nested layout will provide structure for its group of child pages, while still inheriting from the root or parent layout  
+- Example:
+Suppose you have an application with an overall layout and within that there is a seperate layout for the dashboard pages  
+__Step 1__: Create RootLayout includes components like header, footer and main sections of page
+```tsx
+import React from 'react'
+
+const RootLayout = ({
+    children
+}: {
+    children: React.ReactNode
+}) => {
+    return (
+        <div>
+            <Header />
+            <main>
+                {children}
+            </main>
+            <Footer />
+        </div>
+    )
+}
+```
+
+__Step 2__: Create Layout for Dashboard  
+- Dashboard layout will have additional __navigation__ for management pages, but still within the overall layout
+```tsx
+import MainLayout from '../layout';
+
+const DashboardLayout = ({
+    children
+}: {
+    children: React.ReactNode
+}) => {
+    return (
+        <MainLayout>
+            <Navigation />
+            <div>
+                {children}
+            </div>
+        </MainLayout>
+    )
+}
+```
+
+__Step 3__: Create Nested Layout in Subpages
+- In Dashboard, Subpages like `Setting` or `Users` will be displayed in DashboardLayout
+```tsx
+import DashboardLayout from '../layout';
+
+const SettingPage = () => {
+    return (
+        <DashboardLayout>
+            <h2>Setting</h2>
+            <p>Setting page</p>
+        </DashboardLayout>
+    )
+}
+```
+
+### Routing Metadata:
+- Ensuring proper __Search Engine Optimization__ (__SEO__), is crucial for increasing visibilit and attracting users
+- Next.js introduced the Metadata API which allows to define metadata for each page
+- Metadata ensures accurate and relevant information is displayed when your pages are shared or indexed
+- Metadata in Next.js can be managed directly in `layout.tsx` or `page.tsx`
+&rarr; Mahes metadata management more flexible and organizd, especially with the ability to create Dynamic Routing  
+Ex: We can add metadata into our pages by using `metadata` object in `page.tsx`:  
+
+```tsx
+export const metadata = {
+    title: 'My Next.js Application',
+    description: 'This is a sample Next.js application'
+};
+
+const HomePage = () => {
+    return (
+        <div>
+            <h1>Welcome to My Next.js Application</h1>
+        </div>
+    );
+}
+```
+
+- Some common Metadata properties:  
+
+| Property     | Definition                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------|
+| `title`      | The title of the page.                                                                          |
+| `description`| A short description of the page, typically used for SEO.                                         |
+| `keywords`   | Keywords relevant to the page.                                                                  |
+| `openGraph`  | Information shared on social media platforms like Facebook and Twitter.                         |
+| `robots`     | Controls how search engines handle the page (e.g., index, noindex, follow, nofollow).            |
+| `icons`      | Links to icons like the favicon.
+
+Ex:  
+```tsx
+export const metadata = {
+    title: 'Product Page - My Next.js App',
+  description: 'Detailed product information',
+  keywords: ['product', 'details', 'nextjs'],
+  openGraph: {
+    title: 'Product Page',
+    description: 'Check out this amazing product',
+    images: [
+      {
+        url: 'https://example.com/product.jpg',
+        width: 800,
+        height: 600,
+        alt: 'Product Image',
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: '/favicon.ico',
+  },
+}
+```
+
+- There are 2 ways to configure metadata:  
+(1) Export a static metadata object
+
+(2) Export a dynamic `generateMetadata()` function
+
+### Navigation:
+- File based routing
+- We manually entered the URLs in the browser's address bar to navigate to the different routes
+- Users rely on UI elements like links to navigate:
+    - Clicking on them or
+    - Through programmatic navigation after completion an action 
+
+- __Link Component Navigation__: to enable client side navigation Next.js provides us with the `<Link>` component
+    - The `<Link>` component is a React component that extends the `<a>` element, and it's the primary way to navigate between routes in Next.js  
+&rarr; To use it, we need to import it from __"next/link"__
