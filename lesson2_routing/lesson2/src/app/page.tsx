@@ -13,6 +13,14 @@ const Home = () => {
     {
       href: "/profile",
       title: "Profile"
+    }, 
+    {
+      href: "/login",
+      title: "Login"
+    }, 
+    {
+      href: "/register",
+      title: "Register"
     }
   ];
   return (

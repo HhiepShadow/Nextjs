@@ -293,4 +293,80 @@ export const metadata = {
 
 - __Link Component Navigation__: to enable client side navigation Next.js provides us with the `<Link>` component
     - The `<Link>` component is a React component that extends the `<a>` element, and it's the primary way to navigate between routes in Next.js  
-&rarr; To use it, we need to import it from __"next/link"__
+&rarr; To use it, we need to import it from __"next/link"__  
+
+| Property    | Description                                                                                                                                              |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `href`      | The URL or path to navigate to. It can be a string or an object (including pathname and query).                                                           |
+| `as`        | The displayed path different from the `href`. Commonly used when you need to show a different URL than the one being navigated to.                        |
+| `replace`   | If `true`, navigation will replace the current history entry instead of adding a new one. Useful when you don't want users to go back to the previous page.|
+| `scroll`    | If `true`, the page will scroll to the top after navigation. Defaults to `true`, but can be disabled if you want to preserve the scroll position.         |
+| `shallow`   | Navigate without running `getStaticProps`, `getServerSideProps`, or `getInitialProps` again. It preserves the data already fetched for the page.          |
+| `prefetch`  | Automatically prefetches the page when the link is in the viewport. Defaults to `true`, but can be disabled by setting it to `false`.                     |
+| `locale`    | Specifies the locale (language) for the route if using internationalization (i18n).                                                                      |
+| `target`    | Similar to the `target` attribute of an `<a>` tag, used to open the link in a new window or tab (e.g., `_blank`).                                         |
+| `rel`       | Used along with `target="_blank"` for security reasons, commonly set to `rel="noopener noreferrer"`.                                                     |
+| `passHref`  | When `true`, the `href` attribute will be passed down to the child if it's an `<a>` element. Useful for custom link components.                           |
+| `onClick`   | A callback function triggered when the link is clicked.
+
+
+### Loading file:
+- __loading.tsx__ is a special file used to create a Loading component displayed while data and page are being loaded
+- This component will automically display when Next.js detects that a page is waiting to load data  
+Ex:
+```tsx
+import React from 'react';
+
+const Loading = () => {
+    return (
+        <div>
+            <div className="spinner-container"></div>
+            <p>Loading data, please wait...</p>
+        </div>
+    )
+}
+
+export default Loading;
+```
+
+### Error file:
+- Another special file in Next.js is __error.tsx__
+- Used to create a component that handles default error when the page or data encounters errors during rendering
+- Automically wrap a route segment and its nested children in a React Error Boundary
+- Create error UI tailored to specific segments using the file-system hierarchy to adjust granularity
+- Isolate errors to affected segments while keeping the rest of the application functional  
+
+```tsx
+<Layout>
+    <Template>
+        <ErrorBoundary fallback={<Error />}>
+            <Suspense fallback={<Loading />}>
+                <ErrorBoundary fallback={<NotFound />}>
+                    <Page />
+                </ErrorBoundary>
+            </Suspense>
+        </ErrorBoundary>
+    </Template>
+</Layout>
+```
+
+### Parallel Routes:
+- Allows to display multiple parallel routes in the same layout without having to nest them  
+&rarr; Useful when we want to display parts of the application with independent content at the same time, for example, a sidebar and main content
+- Parallel routes are defined using a feature known as slots
+- Slots help structure our content in a modular fashion
+- To define a slot, we use the __@folder__ naming convention
+- Each slot is then passed as a prop to its corresponding `layout.tsx` file
+
+### Unmatched Routes:
+- Navigation from the UI:
+    - In the case of navigation within the UI, Nextjs retains the previous active state of a slot regardless of changes in the URL
+- Page reload:
+    - Nextjs immediately searches for a `default.tsx` file within each unmatched slot
+    - If this `default.tsx` is missing in any of the unmatched slots of the current route, Nextjs will render a 404 error page
+
+- `default.tsx`:
+    - Serves as a fallback to render content when the framework cannot retrive a slot's active state from the current URL
+    - You have complete freedom to define the UI for unmatched routes: You can either mirror the content found in `page.tsx` or craft an entirely custom view 
+
+### Conditional Routes:
