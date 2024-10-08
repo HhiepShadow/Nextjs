@@ -370,3 +370,41 @@ export default Loading;
     - You have complete freedom to define the UI for unmatched routes: You can either mirror the content found in `page.tsx` or craft an entirely custom view 
 
 ### Conditional Routes:
+
+### Intercepting Routes:
+- Allows to load a route from another part of the application within the current layout
+- Useful when we want to display the content of a route without the user switching to a different context  
+__Example__: When clicking on a photo in a feed, we can display the photo in a modal, overlaying the feed  
+&rarr; In this case, Nextjs intercepts the `/photo/123` route, masks the URL, and overlays it over `/feed`
+
+- However, when navigating to the photo by clicking a shareable URL or by refreshing the page, the entire photo page should render instead of the modal
+&rarr; No route interception should occur 
+
+- __Convention__: Intercepting routes can be defined with the `(..)` convention, which is similar to relative path convention `../` but for segments
+    - We can use:
+        - `(.)` to match segments on the __same level__
+        - `(..)` to match segments __1 level above__
+        - `(..)(..)` to match segments __2 levels above__
+        - (...) to match segments from the __root__ `app/src` directory  
+__Example__: We can intercept the `photo` segment from within the `feed` segment by creating a `(..)photo` directory
+
+```
+feed
+|-  layout.tsx
+|-   (..)photo
+|--     [id]
+|---      page.tsx
+photo
+|-   [id]
+|--      page.tsx
+layout.tsx
+page.tsx
+```
+
+#### Modals:
+- Intercepting Routes can be used together with `Parallel Routes` to create modals
+- Allows to solve common challenges when building modals, such as:
+    - Making the modal context __shareable through a URL__
+    - __Preserving context__ when the page is refreshed, instead of closing the modal
+    - __Closing the modal on backwards navigation__ rather than going to the previous route
+    - __Reopening the modal on fowards navigation__
